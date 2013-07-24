@@ -1,12 +1,20 @@
 #!/usr/bin/env ruby
 require "rubygems"
 require 'thor'
+require 'date'
 
 module PbsJob
   class Generate < Thor::Group
     include Thor::Actions
 
     argument :name, :type => :string, :desc => 'Name of the new job.'
+
+    def create_root
+      today = Date.today
+      month = Date::MONTHNAMES[today.month].downcase
+
+      empty_directory "#{name}.#{month}#{today.day}_#{today.year}"
+    end
   end
 
   class PbsJob < Thor
