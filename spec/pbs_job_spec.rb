@@ -7,8 +7,8 @@ describe 'pbs_job' do
 
   HELP = <<-HELP
 Commands:
-  pbs_job generate NAME   # Generates a new PBS job with the name NAME
-  pbs_job help [COMMAND]  # Describe available commands or one specific command
+  pbs_job generate NAME EMAIL_ADDRESS  # Generates a new PBS job with the nam...
+  pbs_job help [COMMAND]               # Describe available commands or one s...
 
 HELP
 
@@ -26,17 +26,22 @@ HELP
       pbs_job 'help generate'
       stdout.must_equal <<-GEN_HELP
 Usage:
-  pbs_job generate NAME
+  pbs_job generate NAME EMAIL_ADDRESS
 
-Generates a new PBS job with the name NAME
+Generates a new PBS job with the name NAME and arranges for PBS alerts to be sent to EMAIL_ADDRESS
 GEN_HELP
     end
     it 'requires name argument' do
       pbs_job 'generate'
-      stderr.must_equal "No value provided for required arguments 'name'\n"
+      stderr.must_equal "No value provided for required arguments 'name', 'email_address'\n"
+    end
+    it 'requires an email argument' do
+      pbs_job 'generate name'
+      stderr.must_equal "No value provided for required arguments 'email_address'\n"
     end
     it 'creates a file structure for job components' do
       name = 'test_job'
+      email_address = 'email@address'
       today = Date.today
       month = Date::MONTHNAMES[today.month].downcase
       job_root = "#{name}.#{month}#{today.day}_#{today.year}"
@@ -47,7 +52,7 @@ GEN_HELP
       streams = "#{job_root}/streams"
 
       in_tmp_dir do
-        pbs_job "generate #{name}"
+        pbs_job "generate #{name} #{email_address}"
         stdout.must_equal <<-DIR
 \e[1m\e[32m      create\e[0m  #{job_root}
 \e[1m\e[32m      create\e[0m  #{qsub_script}
