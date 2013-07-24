@@ -9,11 +9,45 @@ module PbsJob
 
     argument :name, :type => :string, :desc => 'Name of the new job.'
 
-    def create_root
+    def self.source_root
+      File.expand_path('../../', __FILE__)
+    end
+
+    def gen_root
       today = Date.today
       month = Date::MONTHNAMES[today.month].downcase
 
-      empty_directory "#{name}.#{month}#{today.day}_#{today.year}"
+      @job_root = "#{name}.#{month}#{today.day}_#{today.year}"
+      empty_directory @job_root
+    end
+
+    def qsub_script
+      create_file_from_template 'job.qsub'
+    end
+
+    def pbs_script
+      create_file_from_template 'job.pbs'
+    end
+
+    def task
+      create_file_from_template 'task'
+    end
+
+    def results
+      empty_directory "#{@job_root}/results"
+    end
+
+    def streams
+      empty_directory "#{@job_root}/streams"
+    end
+
+    private
+
+    def create_file_from_template(file_name)
+      template(
+        "templates/#{file_name}.tt",
+        "#{@job_root}/#{file_name}"
+      )
     end
   end
 

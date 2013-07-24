@@ -35,18 +35,33 @@ GEN_HELP
       pbs_job 'generate'
       stderr.must_equal "No value provided for required arguments 'name'\n"
     end
-    it 'creates a directory for job components' do
+    it 'creates a file structure for job components' do
       name = 'test_job'
       today = Date.today
       month = Date::MONTHNAMES[today.month].downcase
-      x_directory = "#{name}.#{month}#{today.day}_#{today.year}"
+      job_root = "#{name}.#{month}#{today.day}_#{today.year}"
+      qsub_script = "#{job_root}/job.qsub"
+      pbs_script = "#{job_root}/job.pbs"
+      task = "#{job_root}/task"
+      results = "#{job_root}/results"
+      streams = "#{job_root}/streams"
 
       in_tmp_dir do
         pbs_job "generate #{name}"
         stdout.must_equal <<-DIR
-\e[1m\e[32m      create\e[0m  #{x_directory}
+\e[1m\e[32m      create\e[0m  #{job_root}
+\e[1m\e[32m      create\e[0m  #{qsub_script}
+\e[1m\e[32m      create\e[0m  #{pbs_script}
+\e[1m\e[32m      create\e[0m  #{task}
+\e[1m\e[32m      create\e[0m  #{results}
+\e[1m\e[32m      create\e[0m  #{streams}
 DIR
-        File.directory? x_directory
+        File.directory?(job_root).must_equal true
+        File.file?(qsub_script).must_equal true
+        File.file?(pbs_script).must_equal true
+        File.file?(task).must_equal true
+        File.directory?(results).must_equal true
+        File.directory?(streams).must_equal true
       end
     end
   end
