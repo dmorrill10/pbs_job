@@ -8,6 +8,7 @@ module PbsJob
     include Thor::Actions
 
     STREAMS_DIR_NAME = 'streams'
+    EXECUTABLE_PERMISSIONS = 0775
 
     argument :name, :desc => 'Name of the new job.'
     argument :email_address, :desc => 'Email to which to send PBS alerts.'
@@ -38,15 +39,15 @@ module PbsJob
     end
 
     def qsub_script
-      create_file_from_template 'job.qsub'
+      create_script_from_template 'job.qsub'
     end
 
     def pbs_script
-      create_file_from_template 'job.pbs'
+      create_script_from_template 'job.pbs'
     end
 
     def task
-      create_file_from_template 'task'
+      create_script_from_template 'task'
     end
 
     def results
@@ -64,11 +65,20 @@ module PbsJob
 
     private
 
+    def file_path(script_name)
+      File.join full_name, script_name
+    end
+
     def create_file_from_template(file_name)
       template(
         "templates/#{file_name}.tt",
-        "#{full_name}/#{file_name}"
+        file_path(file_name)
       )
+    end
+
+    def create_script_from_template(script_name)
+      create_file_from_template script_name
+      chmod file_path(script_name), EXECUTABLE_PERMISSIONS
     end
 
     # @returns [String] Name with date appended
