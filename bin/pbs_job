@@ -32,11 +32,7 @@ module PbsJob
     end
 
     def gen_root
-      today = Date.today
-      month = Date::MONTHNAMES[today.month].downcase
-
-      @job_root = "#{name}.#{month}#{today.day}_#{today.year}"
-      empty_directory @job_root
+      empty_directory full_name
     end
 
     def qsub_script
@@ -52,16 +48,16 @@ module PbsJob
     end
 
     def results
-      results_dir = "#{@job_root}/results"
+      results_path = File.join full_name, 'results'
       if options[:link_results]
-        create_link(results_dir, options[:link_results])
+        create_link(results_path, options[:link_results])
       else
-        empty_directory results_dir
+        empty_directory results_path
       end
     end
 
     def streams
-      empty_directory "#{@job_root}/streams"
+      empty_directory streams_path
     end
 
     private
@@ -69,8 +65,29 @@ module PbsJob
     def create_file_from_template(file_name)
       template(
         "templates/#{file_name}.tt",
-        "#{@job_root}/#{file_name}"
+        "#{full_name}/#{file_name}"
       )
+    end
+
+    # @returns [String] Name with date appended
+    def full_name
+      @full_name ||= -> do
+        today = Date.today
+        month = Date::MONTHNAMES[today.month].downcase
+        "#{name}.#{month}#{today.day}_#{today.year}"
+      end.call
+    end
+
+    def abs_job_root
+      @abs_job_root ||= File.expand_path(full_name)
+    end
+
+    def streams_path
+      @streams_path ||= File.join full_name, 'streams'
+    end
+
+    def abs_stream_prefix
+      @abs_stream_prefix ||= File.join abs_job_root, streams_path, full_name
     end
   end
 
