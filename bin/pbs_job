@@ -7,6 +7,8 @@ module PbsJob
   class New < Thor::Group
     include Thor::Actions
 
+    STREAMS_DIR_NAME = 'streams'
+
     argument :name, :desc => 'Name of the new job.'
     argument :email_address, :desc => 'Email to which to send PBS alerts.'
 
@@ -83,11 +85,11 @@ module PbsJob
     end
 
     def streams_path
-      @streams_path ||= File.join full_name, 'streams'
+      @streams_path ||= File.join full_name, STREAMS_DIR_NAME
     end
 
     def abs_stream_prefix
-      @abs_stream_prefix ||= File.join abs_job_root, streams_path, full_name
+      @abs_stream_prefix ||= File.join abs_job_root, STREAMS_DIR_NAME, full_name
     end
   end
 
