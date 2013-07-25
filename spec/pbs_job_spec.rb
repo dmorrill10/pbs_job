@@ -7,10 +7,20 @@ describe 'pbs_job' do
 
   HELP = <<-HELP
 Commands:
-  pbs_job generate NAME EMAIL_ADDRESS  # Generates a new PBS job with the nam...
-  pbs_job help [COMMAND]               # Describe available commands or one s...
+  pbs_job help [COMMAND]                    # Describe available commands or ...
+  pbs_job new NAME EMAIL_ADDRESS [OPTIONS]  # Creates a new PBS job with the ...
 
 HELP
+  NAME = 'test_job'
+  EMAIL_ADDRESS = 'email@address'
+  TODAY = Date.today
+  MONTH = Date::MONTHNAMES[TODAY.month].downcase
+  JOB_ROOT = "#{NAME}.#{MONTH}#{TODAY.day}_#{TODAY.year}"
+  QSUB_SCRIPT = "#{JOB_ROOT}/job.qsub"
+  PBS_SCRIPT = "#{JOB_ROOT}/job.pbs"
+  TASK = "#{JOB_ROOT}/task"
+  RESULTS = "#{JOB_ROOT}/results"
+  STREAMS = "#{JOB_ROOT}/streams"
 
   it 'prints usage and options without arguments' do
     pbs_job
@@ -21,52 +31,90 @@ HELP
     stdout.must_equal HELP
   end
 
-  describe 'generate' do
+  describe 'new' do
     it 'prints help' do
-      pbs_job 'help generate'
+      pbs_job 'help new'
       stdout.must_equal <<-GEN_HELP
 Usage:
-  pbs_job generate NAME EMAIL_ADDRESS
+  pbs_job new NAME EMAIL_ADDRESS [OPTIONS]
 
-Generates a new PBS job with the name NAME and arranges for PBS alerts to be sent to EMAIL_ADDRESS
+Options:
+  r, [--link-results=LINK_RESULTS]  # Directory to which to redirect results
+  s, [--script=SCRIPT]              # Type of script to make the task script
+                                    # Default: <script type>
+
+Creates a new PBS job with the name NAME and arranges for PBS alerts to be sent to EMAIL_ADDRESS, customized by OPTIONS
 GEN_HELP
     end
     it 'requires name argument' do
-      pbs_job 'generate'
+      pbs_job 'new'
       stderr.must_equal "No value provided for required arguments 'name', 'email_address'\n"
     end
     it 'requires an email argument' do
-      pbs_job 'generate name'
+      pbs_job "new #{NAME}"
       stderr.must_equal "No value provided for required arguments 'email_address'\n"
     end
     it 'creates a file structure for job components' do
-      name = 'test_job'
-      email_address = 'email@address'
-      today = Date.today
-      month = Date::MONTHNAMES[today.month].downcase
-      job_root = "#{name}.#{month}#{today.day}_#{today.year}"
-      qsub_script = "#{job_root}/job.qsub"
-      pbs_script = "#{job_root}/job.pbs"
-      task = "#{job_root}/task"
-      results = "#{job_root}/results"
-      streams = "#{job_root}/streams"
-
       in_tmp_dir do
-        pbs_job "generate #{name} #{email_address}"
+        pbs_job "new #{NAME} #{EMAIL_ADDRESS}"
         stdout.must_equal <<-DIR
-\e[1m\e[32m      create\e[0m  #{job_root}
-\e[1m\e[32m      create\e[0m  #{qsub_script}
-\e[1m\e[32m      create\e[0m  #{pbs_script}
-\e[1m\e[32m      create\e[0m  #{task}
-\e[1m\e[32m      create\e[0m  #{results}
-\e[1m\e[32m      create\e[0m  #{streams}
+\e[1m\e[32m      create\e[0m  #{JOB_ROOT}
+\e[1m\e[32m      create\e[0m  #{QSUB_SCRIPT}
+\e[1m\e[32m      create\e[0m  #{PBS_SCRIPT}
+\e[1m\e[32m      create\e[0m  #{TASK}
+\e[1m\e[32m      create\e[0m  #{RESULTS}
+\e[1m\e[32m      create\e[0m  #{STREAMS}
 DIR
-        File.directory?(job_root).must_equal true
-        File.file?(qsub_script).must_equal true
-        File.file?(pbs_script).must_equal true
-        File.file?(task).must_equal true
-        File.directory?(results).must_equal true
-        File.directory?(streams).must_equal true
+        File.directory?(JOB_ROOT).must_equal true
+        File.file?(QSUB_SCRIPT).must_equal true
+        File.file?(PBS_SCRIPT).must_equal true
+        File.file?(TASK).must_equal true
+        File.directory?(RESULTS).must_equal true
+        File.directory?(STREAMS).must_equal true
+      end
+    end
+  end
+  describe 'script type option' do
+    it '--script allows specification of the script type of task' do
+      in_tmp_dir do
+        pbs_job "new #{NAME} #{EMAIL_ADDRESS} --script=bash"
+        stdout.must_equal <<-DIR
+\e[1m\e[32m      create\e[0m  #{JOB_ROOT}
+\e[1m\e[32m      create\e[0m  #{QSUB_SCRIPT}
+\e[1m\e[32m      create\e[0m  #{PBS_SCRIPT}
+\e[1m\e[32m      create\e[0m  #{TASK}
+\e[1m\e[32m      create\e[0m  #{RESULTS}
+\e[1m\e[32m      create\e[0m  #{STREAMS}
+DIR
+        File.directory?(JOB_ROOT).must_equal true
+        File.file?(QSUB_SCRIPT).must_equal true
+        File.file?(PBS_SCRIPT).must_equal true
+        File.file?(TASK).must_equal true
+        File.directory?(RESULTS).must_equal true
+        File.directory?(STREAMS).must_equal true
+      end
+    end
+  end
+  describe 'results link option' do
+    it '--link-results allows redirection of results' do
+      linked_results = '/scratch/results'
+      in_tmp_dir do
+        pbs_job "new #{NAME} #{EMAIL_ADDRESS} --link-results=#{linked_results}"
+        stdout.must_equal <<-DIR
+\e[1m\e[32m      create\e[0m  #{JOB_ROOT}
+\e[1m\e[32m      create\e[0m  #{QSUB_SCRIPT}
+\e[1m\e[32m      create\e[0m  #{PBS_SCRIPT}
+\e[1m\e[32m      create\e[0m  #{TASK}
+\e[1m\e[32m      create\e[0m  #{RESULTS}
+\e[1m\e[32m      create\e[0m  #{STREAMS}
+DIR
+        File.directory?(JOB_ROOT).must_equal true
+        File.file?(QSUB_SCRIPT).must_equal true
+        File.file?(PBS_SCRIPT).must_equal true
+        File.file?(TASK).must_equal true
+        File.symlink?(RESULTS).must_equal true
+        File.readlink(RESULTS).must_equal linked_results
+        File.directory?(STREAMS).must_equal true
       end
     end
   end

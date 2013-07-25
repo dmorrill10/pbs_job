@@ -1,0 +1,6 @@
+#!/usr/bin/env <%= options[:script] %>
+
+# This is the meat of the job.
+# Please place the task you'd like your job to run.
+# For example, this is where you would put
+# experiment logic.

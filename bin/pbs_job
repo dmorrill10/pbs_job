@@ -4,11 +4,28 @@ require 'thor'
 require 'date'
 
 module PbsJob
-  class Generate < Thor::Group
+  class New < Thor::Group
     include Thor::Actions
 
-    argument :name, :type => :string, :desc => 'Name of the new job.'
-    argument :email_address, :type => :string, :desc => 'Email to which to send PBS alerts.'
+    argument :name, :desc => 'Name of the new job.'
+    argument :email_address, :desc => 'Email to which to send PBS alerts.'
+
+    class_option(
+      :link_results,
+      {
+        :desc => 'Directory to which to redirect results',
+        :default => nil,
+        :aliases => 'r'
+      }
+    )
+    class_option(
+      :script,
+      {
+        :desc => 'Type of script to make the task script',
+        :default => '<script type>',
+        :aliases => 's'
+      }
+    )
 
     def self.source_root
       File.expand_path('../../', __FILE__)
@@ -35,7 +52,12 @@ module PbsJob
     end
 
     def results
-      empty_directory "#{@job_root}/results"
+      results_dir = "#{@job_root}/results"
+      if options[:link_results]
+        create_link(results_dir, options[:link_results])
+      else
+        empty_directory results_dir
+      end
     end
 
     def streams
@@ -53,14 +75,15 @@ module PbsJob
   end
 
   class PbsJob < Thor
-    map 'g' => :generate
+    map 'n' => :new
 
     register(
-      Generate,
-      'generate',
-      'generate NAME EMAIL_ADDRESS',
-      "Generates a new PBS job with the name NAME and arranges for PBS alerts to be sent to EMAIL_ADDRESS"
+      New,
+      'new',
+      'new NAME EMAIL_ADDRESS [OPTIONS]',
+      "Creates a new PBS job with the name NAME and arranges for PBS alerts to be sent to EMAIL_ADDRESS, customized by OPTIONS"
     )
+    tasks["new"].options = New.class_options
   end
 end
 
