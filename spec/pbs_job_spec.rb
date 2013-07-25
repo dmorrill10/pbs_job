@@ -50,9 +50,11 @@ Usage:
   pbs_job new NAME EMAIL_ADDRESS [OPTIONS]
 
 Options:
-  r, [--link-results=LINK_RESULTS]  # Directory to which to redirect results
-  s, [--script=SCRIPT]              # Type of script to make the task script
-                                    # Default: <script type>
+  r, [--link-results=LINK_RESULTS]          # Directory to which to redirect results
+  s, [--script=SCRIPT]                      # Type of script to make the task script
+                                            # Default: bash
+  w, [--task-working-dir=TASK_WORKING_DIR]  # Working directory in which to run task
+                                            # Default: /home/vagrant
 
 Creates a new PBS job with the name NAME and arranges for PBS alerts to be sent to EMAIL_ADDRESS, customized by OPTIONS
 GEN_HELP

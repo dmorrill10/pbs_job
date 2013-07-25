@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 #PBS -m abe -M <%= email_address %>
-cd <%= abs_job_root %>
-./task > "<%= abs_stream_prefix %>.out" 2> "<%= abs_stream_prefix %>.err"
+cd <%= options[:task_working_dir] %>
+"<%= abs_job_root %>/task" > "<%= abs_stream_prefix %>.out" 2> "<%= abs_stream_prefix %>.err"

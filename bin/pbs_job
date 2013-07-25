@@ -25,8 +25,16 @@ module PbsJob
       :script,
       {
         :desc => 'Type of script to make the task script',
-        :default => '<script type>',
+        :default => 'bash',
         :aliases => 's'
+      }
+    )
+    class_option(
+      :task_working_dir,
+      {
+        :desc => 'Working directory in which to run task',
+        :default => File.expand_path('~'),
+        :aliases => 'w'
       }
     )
 
