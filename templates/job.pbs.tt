@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
+#PBS -N <%= name %>
 #PBS -m abe -M <%= email_address %>
+#PBS -o <%= abs_stream_prefix %>.o
+#PBS -e <%= abs_stream_prefix %>.e
+<%= if options[:walltime] then "#PBS -l walltime=#{options[:walltime]}" else "" end %>
+<%= if options[:mem] then "#PBS -l mem=#{options[:mem]}" else "" end %>
+<%= if options[:nodes] && options[:ppn] then "#PBS -l nodes=#{options[:nodes]}:ppn=#{options[:ppn]}" else "" end %>
+<%= if options[:pmem] then "#PBS -l pmem=#{options[:pmem]}" else "" end %>
+<%= if options[:procs] then "#PBS -l procs=#{options[:procs]}" else "" end %>
+
 cd <%= options[:task_working_dir] %>
 "<%= abs_job_root %>/task" > "<%= abs_stream_prefix %>.out" 2> "<%= abs_stream_prefix %>.err"
+

@@ -45,7 +45,7 @@ OUT
   describe 'new' do
     it 'prints help' do
       pbs_job 'help new'
-      stdout.must_equal <<-GEN_HELP
+      gen_help = <<-GEN_HELP
 Usage:
   pbs_job new NAME EMAIL_ADDRESS [OPTIONS]
 
@@ -54,10 +54,9 @@ Options:
   s, [--script=SCRIPT]                      # Type of script to make the task script
                                             # Default: bash
   w, [--task-working-dir=TASK_WORKING_DIR]  # Working directory in which to run task
-                                            # Default: /home/vagrant
-
-Creates a new PBS job with the name NAME and arranges for PBS alerts to be sent to EMAIL_ADDRESS, customized by OPTIONS
 GEN_HELP
+
+    stdout[0..gen_help.length-1].must_equal gen_help
     end
     it 'requires name argument' do
       pbs_job 'new'

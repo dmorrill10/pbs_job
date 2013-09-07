@@ -37,6 +37,57 @@ module PbsJob
         :aliases => 'w'
       }
     )
+   
+    class_option(
+      :walltime,
+      {
+        :desc => '#PBS -l walltime=72:00:00
+    This is the maximum elapsed time that the job will be allowed to run, specified as hours, minutes and seconds in the form HH:MM:SS. If a job exceeds its walltime limit, it is killed by the system. It is best to overestimate the walltime to avoid a run being spoiled by early termination, however, an accurate walltime estimate will allow your job to be scheduled more effectively. It is best to design your code with a capability to write checkpoint data to a file periodically and to be able to restart from the time of the most recent checkpoint by reading that data. That way if the run reaches its walltime limit (or fails for some other reason), only a small fraction of the total computation will have to be redone in a subsequent run. (https://www.westgrid.ca/support/running_jobs)',
+        :default => nil 
+      }
+    )
+    class_option(
+      :mem,
+      {
+        :desc => '#PBS -l mem=2000mb
+    The mem parameter should be an estimate of the total amount of memory required by the job. For parallel jobs, multiply the memory per process by the number of processes. Append units of MB or GB as appropriate. The value given must be an integer, so, for example, use mem=3584MB instead of mem=3.5GB (1 GB = 1024 MB) .
+    Note: the mem parameter is not used on the large shared-memory machines. . . . (https://www.westgrid.ca/support/running_jobs)',
+        :default => nil 
+      }
+    )
+    class_option(
+      :nodes,
+      {
+        :desc => '#PBS -l nodes=4:ppn=2
+    Use a combination of nodes and processors per node (ppn) to request the total number of processors needed. (https://www.westgrid.ca/support/running_jobs)',
+        :default => nil 
+      }
+    )
+    class_option(
+      :ppn,
+      {
+        :desc => '#PBS -l nodes=4:ppn=2
+    Use a combination of nodes and processors per node (ppn) to request the total number of processors needed. (https://www.westgrid.ca/support/running_jobs)',
+        :default => 1 
+      }
+    )
+    class_option(
+      :pmem,
+      {
+        :desc => '#PBS -l pmem=2000mb
+    Instead of specifying the total memory requirement of your job with the mem parameter . . ., you can specify a per process memory limit, pmem.  Note however, that mem and pmem are independent parameters, so, on some systems it may be necessary to specify both mem and pmem. (https://www.westgrid.ca/support/running_jobs)',
+        :default => nil
+      }
+    )
+    class_option(
+      :procs,
+      {
+        :desc => '#PBS -l procs=8
+    The procs resource request allows the scheduler to distribute the requested number of processors among any available nodes on the cluster.  This can reduce the waiting time in the input queue. . . .
+    In using this resource request format, you are not guaranteed any specific number of processors per node.  As such, it is not appropriate for OpenMP programs or other multi-threaded programs, with rare exception.  For example, if you have a mixed MPI-OpenMP program in which you limit the number of threads per process to just one (OMP_NUM_THREADS=1) you could use procs.   In other cases, you may also have to combine procs with pmem to make sure that the scheduler does not assign too many of your processes to the same node. (https://www.westgrid.ca/support/running_jobs)',
+        :default => nil
+      }
+    )
 
     def self.source_root
       File.expand_path('../../', __FILE__)

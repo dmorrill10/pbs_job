@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 # This script runs job.pbs with qsub. Customize as necessary
-qsub "<%= abs_job_root %>/job.pbs" -N "<%= full_name %>" -e "<%= abs_stream_prefix %>.e" -o "<%= abs_stream_prefix %>.o"
+qsub "<%= abs_job_root %>/job.pbs"
