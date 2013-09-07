@@ -91,7 +91,7 @@ module PbsJob
 
     # @returns [String] Name with date appended
     def full_name
-      @full_name ||= -> do
+      @full_name ||= lambda do
         today = Date.today
         month = Date::MONTHNAMES[today.month].downcase
         "#{name}.#{month}#{today.day}_#{today.year}"
