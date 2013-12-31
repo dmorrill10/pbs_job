@@ -1,6 +1,7 @@
 require_relative "pbs_job/version"
 
 require 'thor'
+require 'date'
 
 module PbsJob
   class New < Thor::Group
@@ -126,11 +127,7 @@ module PbsJob
 
     # @returns [String] Name with date appended
     def full_name
-      @full_name ||= lambda do
-        today = Date.today
-        month = Date::MONTHNAMES[today.month].downcase
-        "#{name}.#{month}#{today.day}_#{today.year}"
-      end.call
+      @full_name ||= "#{name}.#{Date.today.strftime('%b%d_%Y')}"
     end
 
     def abs_job_root

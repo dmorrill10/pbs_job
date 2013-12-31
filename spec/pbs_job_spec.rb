@@ -1,15 +1,12 @@
 require_relative 'support/spec_helper'
 
-require "date"
 require 'tmpdir'
 
 require_relative '../lib/pbs_job'
 
 NAME = 'test_job'
 EMAIL_ADDRESS = 'email@address'
-TODAY = Date.today
-MONTH = Date::MONTHNAMES[TODAY.month].downcase
-JOB_ROOT = "#{NAME}.#{MONTH}#{TODAY.day}_#{TODAY.year}"
+JOB_ROOT = "#{NAME}.#{Date.today.strftime('%b%d_%Y')}"
 QSUB_SCRIPT = "#{JOB_ROOT}/job.qsub"
 PBS_SCRIPT = "#{JOB_ROOT}/job.pbs"
 TASK = "#{JOB_ROOT}/task"

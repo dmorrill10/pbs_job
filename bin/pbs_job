@@ -1,7 +1,10 @@
 #!/usr/bin/env ruby
 require "rubygems"
-require 'date'
 
-require 'pbs_job'
+begin
+  require_relative '../lib/pbs_job'
+rescue
+  require 'pbs_job'
+end
 
 PbsJob::PbsJob.start(ARGV)
