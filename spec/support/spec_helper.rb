@@ -16,6 +16,10 @@ end
 
 require 'bahia'
 
+Bahia.project_directory = File.expand_path('../../../', __FILE__)
+Bahia.command = File.join(Bahia.project_directory, 'bin', 'pbs_job')
+Bahia.command_method = 'pbs_job'
+
 class MiniTest::Spec
   include Bahia
 end

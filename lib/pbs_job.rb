@@ -127,7 +127,7 @@ module PbsJob
 
     # @returns [String] Name with date appended
     def full_name
-      @full_name ||= "#{name}.#{Date.today.strftime('%b%d_%Y')}"
+      @full_name ||= "#{name}.#{DateTime.now.strftime('%b%d_%Y.%Hh-%Mm-%Ss')}"
     end
 
     def abs_job_root
