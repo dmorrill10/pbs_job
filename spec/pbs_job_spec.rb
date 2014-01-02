@@ -32,6 +32,8 @@ Usage:
   pbs_job new NAME EMAIL_ADDRESS [OPTIONS]
 
 Options:
+  t, [--append-timestamp]                   # Append a date and timestamp to the job root directory name
+                                            # Default: true
   r, [--link-results=LINK_RESULTS]          # Directory to which to redirect results
   s, [--script=SCRIPT]                      # Type of script to make the task script
                                             # Default: bash
@@ -73,6 +75,41 @@ GEN_HELP
 
         stdout.wont_be_empty
       end
+    end
+  end
+
+
+  JOB_ROOT = NAME
+  QSUB_SCRIPT = "#{JOB_ROOT}/job.qsub"
+  PBS_SCRIPT = "#{JOB_ROOT}/job.pbs"
+  TASK = "#{JOB_ROOT}/task"
+  RESULTS = "#{JOB_ROOT}/results"
+  STREAMS = "#{JOB_ROOT}/streams"
+  SUCCESSFUL_OUTPUT = <<-OUT
+\e[1m\e[32m      create\e[0m  #{JOB_ROOT}
+\e[1m\e[32m      create\e[0m  #{QSUB_SCRIPT}
+\e[1m\e[32m       chmod\e[0m  #{QSUB_SCRIPT}
+\e[1m\e[32m      create\e[0m  #{PBS_SCRIPT}
+\e[1m\e[32m       chmod\e[0m  #{PBS_SCRIPT}
+\e[1m\e[32m      create\e[0m  #{TASK}
+\e[1m\e[32m       chmod\e[0m  #{TASK}
+\e[1m\e[32m      create\e[0m  #{STREAMS}
+\e[1m\e[32m      create\e[0m  #{RESULTS}
+OUT
+
+  describe 'no timestamp on directory name option' do
+    it '--no-append_timestamp works' do
+      in_tmp_dir do
+        pbs_job "new #{NAME} #{EMAIL_ADDRESS} --no-append_timestamp"
+
+        stdout.must_equal SUCCESSFUL_OUTPUT
+        File.directory?(JOB_ROOT).must_equal true
+        check_script QSUB_SCRIPT
+        check_script PBS_SCRIPT
+        check_script TASK
+        File.directory?(STREAMS).must_equal true
+        File.directory?(RESULTS).must_equal true
+    end
     end
   end
 

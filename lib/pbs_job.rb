@@ -14,6 +14,15 @@ module PbsJob
     argument :email_address, :desc => 'Email to which to send PBS alerts.'
 
     class_option(
+      :append_timestamp,
+      {
+        :desc => 'Append a date and timestamp to the job root directory name',
+        :default => true,
+        :aliases => 't',
+        :type => :boolean
+      }
+    )
+    class_option(
       :link_results,
       {
         :desc => 'Directory to which to redirect results',
@@ -127,7 +136,11 @@ module PbsJob
 
     # @returns [String] Name with date appended
     def full_name
-      @full_name ||= "#{name}.#{DateTime.now.strftime('%b%d_%Y.%Hh-%Mm-%Ss')}"
+      @full_name ||= if options[:append_timestamp]
+        "#{name}.#{DateTime.now.strftime('%b%d_%Y.%Hh-%Mm-%Ss')}"
+      else
+        name
+      end
     end
 
     def abs_job_root
