@@ -152,7 +152,7 @@ module PbsJob
     end
 
     def abs_stream_prefix
-      @abs_stream_prefix ||= File.join abs_job_root, STREAMS_DIR_NAME, full_name
+      @abs_stream_prefix ||= File.join abs_job_root, STREAMS_DIR_NAME, File.basename(full_name)
     end
 
     def record_task_execution_code
