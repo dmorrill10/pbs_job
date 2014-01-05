@@ -3,7 +3,7 @@ require "rubygems"
 
 begin
   require_relative '../lib/pbs_job'
-rescue
+rescue Errno::ENOENT
   require 'pbs_job'
 end
 

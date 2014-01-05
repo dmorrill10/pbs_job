@@ -154,6 +154,17 @@ module PbsJob
     def abs_stream_prefix
       @abs_stream_prefix ||= File.join abs_job_root, STREAMS_DIR_NAME, full_name
     end
+
+    def record_task_execution_code
+      @record_task_execution_code ||= <<-EOB
+set -x # Record commands to stderr
+
+# Record machine and user information
+uname -a
+whoami
+pwd
+EOB
+    end
   end
 
   class PbsJob < Thor

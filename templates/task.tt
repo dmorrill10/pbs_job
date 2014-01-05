@@ -1,5 +1,8 @@
 #!/usr/bin/env <%= options[:script] %>
 
+<%= if 'bash' == options[:script] then record_task_execution_code end %>
+
 # This is the meat of the job.
 # For example, this is where you would put
 # experiment logic.
+echo "Hi, I'm a job named <%= full_name %>."

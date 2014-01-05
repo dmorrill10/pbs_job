@@ -10,5 +10,5 @@
 <%= if options[:procs] then "#PBS -l procs=#{options[:procs]}" else "" end %>
 
 cd <%= options[:task_working_dir] %>
-"<%= abs_job_root %>/task" > "<%= abs_stream_prefix %>.out" 2> "<%= abs_stream_prefix %>.err"
+"<%= abs_job_root %>/task" &> "<%= abs_stream_prefix %>.err.out"
 
